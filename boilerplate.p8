@@ -8,7 +8,7 @@ end
 
 function _update()
  rain:add(body(
-  v(rnd(112)+8,24)
+  v(rnd(112)+8,8)
  ))
  
  world:u()
@@ -139,8 +139,7 @@ physics = {
  u=function(p)
   p:gr()
   
-  p.x += p.d.x
-  p.y += p.d.y
+  p.p = p.p:add(p.d)
   
   return true
  end
@@ -148,14 +147,20 @@ physics = {
 
 function body(p,d,m)
  local b={
+  p=p,
   m=m or 1,
-  x=p.x,
-  y=p.y,
-  d=d or v(0,0),
+  d=d or v(0,0)
  }
- 
+
  extend(b,render)
  extend(b,physics)
+
+ b.r=function(b)
+  b.x = b.p.x
+  b.y = b.p.y
+  
+  super(b,"r")
+ end
  
  return b
 end
@@ -186,7 +191,7 @@ function particle(o,n,l,f)
  p.t = 0
  
  for i=1,n do
-  p:add(f(o))
+  p:add(f(o,i))
  end
  
  p.u = function(p)
