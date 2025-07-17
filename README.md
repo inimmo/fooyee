@@ -74,6 +74,12 @@ Provides add/sub/mul/div/neg/mag/norm methods, a helper factory function `v(x,y)
 {0.7071,0.7071}
  ```
 
+Operator overloads are also provided
+```lua
+> print(v(1,1) + v(2,2))
+{3,3}
+```
+
 ### Physics
 A simple physics process is included as an extension library, providing a way to trivially interpolate two vectors to generate a new position.
 
