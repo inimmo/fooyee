@@ -98,7 +98,7 @@ This extension library currently makes a lot of assumptions about naming:
 By default, an object using this render method will display a single white pixel at the provided coordinates.
 
 TODO:
-* A specific flag shouldn't be responsible for the sprite/pallette switch behaviour, but I haven't found a pattern I like
+* A specific flag shouldn't be responsible for the sprite/palette switch behaviour, but I haven't found a pattern I like
 * Doesn't support vertical flipping (and therefore doesn't support rotation). Not hard to add, but needs even more magic variable names or values.
 * No support for rectfill/circfill/etc, it's either single-pixel or full sprite
 
@@ -107,7 +107,7 @@ A wrapper for a particle system is provided both as utility and a basic example 
 
 Calling `particle(origin,count,lifetime,factory)` will return a system containing _count_ elements, each created using the callback _factory_. The factory callback is passed the _origin_ vector and the iteration up to the maximum of _count_.
 
-The simplest implementation of a factory method would be to delegate to `body(origin)`. By default this would create a single physics body at the origin point (which will then fall off the screen, assuming default gravity). A basic glitter bomb might look like this:
+The simplest implementation of a factory method would be to delegate to `body(origin)`. By default, this would create a single physics body at the origin point (which will then fall off the screen, assuming default gravity). A basic glitter bomb might look like this:
 ```lua
 particle(
   v(64,64),
@@ -149,5 +149,22 @@ function _draw()
  world:r()
 end
 ```
+
+The immediate problem here is that the raindrops don't ever die, so we very quickly hit a memory limit. A simple fix is to add a custom update function that returns false when the drop is off the screen:
+
+```lua
+local drop = body(
+ v(rnd(112)+8,8)
+)
+
+drop.u = function(b)
+ super(b,"u")
+ return b.p.y <= 127
+end
+
+rain:add(drop)
+```
+
+A generalised version of the function could also be written to always destroy physics bodies that are off any side of the screen.
 
 ### 
